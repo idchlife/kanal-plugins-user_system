@@ -1,0 +1,8 @@
+module Kanal
+  module Plugins
+    module UserSystem
+      VERSION: String
+      # See the writing guide of rbs: https://github.com/ruby/rbs#guides
+    end
+  end
+end
