@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.metadata["changelog_uri"] = "https://github.com/idchlife/kanal-plugins-user_system"
 
   spec.add_dependency "activerecord"
-  spec.add_dependency "kanal"
+#  spec.add_dependency "kanal"
   spec.add_dependency "sqlite3"
 
   # Specify which files should be added to the gem when it is released.

@@ -9,6 +9,8 @@ gem "rake", "~> 13.0"
 
 gem "rspec", "~> 3.0"
 
+gem "kanal", git: "git@github.com:idchlife/kanal.git"
+
 group :development do
   gem "rubocop", "~> 1.21"
   gem "ruby-debug-ide"
