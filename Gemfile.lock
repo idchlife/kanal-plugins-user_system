@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kanal-plugins-user_system (0.2.0)
+    kanal-plugins-user_system (0.2.1)
       activerecord
       sqlite3
 
