@@ -8,7 +8,7 @@ module Kanal
     module UserSystem
       module Models
         # Base user class for storing user properties
-        class KanalUser < ActiveRecord::Base
+        class KanalUser < ::ActiveRecord::Base
           self.table_name = :kanal_users
 
           STATE_PROPERTY = "_state"

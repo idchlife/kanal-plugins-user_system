@@ -8,7 +8,7 @@ module Kanal
     module UserSystem
       module Models
         # Base user class for storing user properties
-        class KanalUserProperty < ActiveRecord::Base
+        class KanalUserProperty < ::ActiveRecord::Base
           include Helpers::JsonValueConverterMixin
 
           self.table_name = :kanal_user_properties

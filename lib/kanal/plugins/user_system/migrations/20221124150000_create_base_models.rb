@@ -2,7 +2,7 @@
 
 require "active_record"
 
-class CreateBaseModels < ActiveRecord::Migration[7.0]
+class CreateBaseModels < ::ActiveRecord::Migration[7.0]
   def change
     create_table :kanal_users do |t|
       t.string :username, null: false, index: { unique: true, name: "kanal_unique_usernames" }
