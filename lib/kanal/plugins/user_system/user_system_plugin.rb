@@ -32,7 +32,7 @@ module Kanal
         #
         # @return [void] <description>
         #
-        def setup(core, auto_create: false)
+        def setup(core)
           unless core.plugin_registered? :active_record
             raise "Cannot setup UserSystem without :active_record plugin installed!"
           end
