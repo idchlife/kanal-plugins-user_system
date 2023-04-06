@@ -15,7 +15,7 @@ RSpec.describe Kanal::Plugins::UserSystem::UserSystemPlugin do
     FileUtils.rm_f(DB_FILEPATH)
   end
 
-  def initialize_plugin
+  def initialize_plugin(auto_create: false)
     core = Kanal::Core::Core.new
 
     core.register_plugin Kanal::Plugins::Batteries::BatteriesPlugin.new
@@ -24,7 +24,17 @@ RSpec.describe Kanal::Plugins::UserSystem::UserSystemPlugin do
       adapter: "sqlite3",
       database: DB_FILEPATH
     )
-    core.register_plugin Kanal::Plugins::UserSystem::UserSystemPlugin.new
+
+    if auto_create
+      user_system = Kanal::Plugins::UserSystem::UserSystemPlugin.new auto_create: true
+      user_system.auto_create.enable_telegram(core)
+    else
+      user_system = Kanal::Plugins::UserSystem::UserSystemPlugin.new
+      core.register_plugin user_system
+    end
+
+    core.register_plugin user_system
+
     active_record_plugin = core.get_plugin :active_record
     active_record_plugin.migrate
 
@@ -84,29 +94,35 @@ RSpec.describe Kanal::Plugins::UserSystem::UserSystemPlugin do
       end
     end
 
+    output = nil
+
+    core.router.output_ready do |o|
+      output = o
+    end
+
     input = core.create_input
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to include "User exists!"
 
     input = core.create_input
     input.body = "set last_name LookAtMyHorse"
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to include "Last name changed!"
 
     input = core.create_input
     input.body = "get last_name"
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to include "LookAtMyHorse"
 
     input = core.create_input
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to include "You have it"
   end
@@ -175,9 +191,15 @@ RSpec.describe Kanal::Plugins::UserSystem::UserSystemPlugin do
       end
     end
 
+    output = nil
+
+    core.router.output_ready do |o|
+      output = o
+    end
+
     input = core.create_input
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to include "User does not exist"
 
@@ -185,14 +207,14 @@ RSpec.describe Kanal::Plugins::UserSystem::UserSystemPlugin do
     input.body = "/start"
     input.chat_id = 4444
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
     expect(output.body).to include "Welcome. Now you are required to enter your name"
 
     input = core.create_input
     input.body "Well hello there"
     input.chat_id = 4444
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to include "Please provide your name"
 
@@ -200,7 +222,7 @@ RSpec.describe Kanal::Plugins::UserSystem::UserSystemPlugin do
     input.body "John Rico"
     input.chat_id = 4444
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to eq "Nice, your name: John Rico"
 
@@ -208,14 +230,67 @@ RSpec.describe Kanal::Plugins::UserSystem::UserSystemPlugin do
     input.body "Anything"
     input.chat_id = 4444
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to eq "Main Menu"
 
     input = core.create_input
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to eq "User does not exist"
+  end
+
+  it "works with auto creator" do
+    core = initialize_plugin auto_create: true
+
+    core.register_input_parameter :tg_chat_id
+    core.register_input_parameter :tg_username
+
+    core.router.default_response do
+      body "Default response"
+    end
+
+    core.router.configure do
+      on :user, :exists do
+        on :user_state, :not_set do
+          respond do
+            body "Welcome"
+          end
+        end
+      end
+
+      on :flow, :any do
+        respond do
+          body "User does not exist"
+        end
+      end
+    end
+
+    output = nil
+
+    core.router.output_ready do |o|
+      output = o
+    end
+
+    input = core.create_input
+
+    core.router.consume_input input
+
+    input = core.create_input
+    input.body = "/start"
+    input.tg_chat_id = 4444
+
+    core.router.consume_input input
+    expect(output.body).to include "Welcome"
+    expect(KanalUser.first.username).to eq "TEMP_USERNAME_4444"
+
+    input = core.create_input
+    input.body = "/start"
+    input.tg_chat_id = 55555
+    input.tg_username = "Something"
+
+    core.router.consume_input input
+    expect(KanalUser.last.username).to eq "Something"
   end
 end

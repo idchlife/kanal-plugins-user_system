@@ -2,6 +2,7 @@
 
 require "kanal/core/plugins/plugin"
 require_relative "./models/kanal_user"
+require_relative "helpers/auto_creator"
 
 module Kanal
   module Plugins
@@ -10,6 +11,17 @@ module Kanal
       # registration and removal system
       class UserSystemPlugin < Kanal::Core::Plugins::Plugin
         include Models
+        include Helpers
+
+        attr_reader :auto_create
+
+        #
+        # @param [Boolean] auto_create Specify if auto-creation of users on incoming message will be used
+        #
+        def initialize(auto_create: false)
+          super()
+          @auto_create = AutoCreator.new if auto_create
+        end
 
         def name
           :user_system
@@ -20,7 +32,7 @@ module Kanal
         #
         # @return [void] <description>
         #
-        def setup(core)
+        def setup(core, auto_create: false)
           unless core.plugin_registered? :active_record
             raise "Cannot setup UserSystem without :active_record plugin installed!"
           end
