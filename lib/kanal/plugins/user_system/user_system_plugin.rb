@@ -15,14 +15,6 @@ module Kanal
 
         attr_reader :auto_create
 
-        #
-        # @param [Boolean] auto_create Specify if auto-creation of users on incoming message will be used
-        #
-        def initialize(auto_create: false)
-          super()
-          @auto_create = AutoCreator.new if auto_create
-        end
-
         def name
           :user_system
         end
@@ -43,6 +35,11 @@ module Kanal
 
           setup_user_storage core
           setup_user_state core
+          enable_auto_create core
+        end
+
+        def enable_auto_create(core)
+          @auto_create = AutoCreator.new core
         end
 
         def setup_user_state(core)

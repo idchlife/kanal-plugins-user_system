@@ -25,12 +25,11 @@ RSpec.describe Kanal::Plugins::UserSystem::UserSystemPlugin do
       database: DB_FILEPATH
     )
 
+    user_system = Kanal::Plugins::UserSystem::UserSystemPlugin.new
+
     if auto_create
-      user_system = Kanal::Plugins::UserSystem::UserSystemPlugin.new auto_create: true
-      user_system.auto_create.enable_telegram(core)
-    else
-      user_system = Kanal::Plugins::UserSystem::UserSystemPlugin.new
-      core.register_plugin user_system
+      user_system.enable_auto_create core
+      user_system.auto_create.enable_telegram
     end
 
     core.register_plugin user_system

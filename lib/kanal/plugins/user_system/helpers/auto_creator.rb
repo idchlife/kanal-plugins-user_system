@@ -5,9 +5,18 @@ module Kanal
     module UserSystem
       module Helpers
         class AutoCreator
+          def initialize(core)
+            @core = core
+            @telegram_enabled = false
+          end
+
           # Activates creation of user with telegram_chat_id property during input consuming
-          def enable_telegram(core)
-            core.hooks.attach :input_before_router do |input|
+          def enable_telegram
+            return if @telegram_enabled
+
+            @telegram_enabled = true
+
+            @core.hooks.attach :input_before_router do |input|
               tg_chat_id = input.tg_chat_id
 
               tg_chat_id_property = "telegram_chat_id"
