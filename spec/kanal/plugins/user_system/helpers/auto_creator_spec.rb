@@ -2,7 +2,6 @@
 
 require "fileutils"
 require "kanal/plugins/user_system/user_system_plugin"
-require "kanal/plugins/user_system/helpers/auto_creator"
 require "kanal/plugins/batteries/batteries_plugin"
 require "kanal/core/core"
 
