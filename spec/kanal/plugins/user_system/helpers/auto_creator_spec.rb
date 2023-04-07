@@ -10,10 +10,6 @@ include Kanal::Plugins::UserSystem::Models
 
 DB_FILEPATH = File.join(__dir__, "../../../../tmp/db.sqlite")
 
-class TestAutoCreator
-  include Kanal::Plugins::UserSystem::Helpers::AutoCreator
-end
-
 RSpec.describe Kanal::Plugins::UserSystem::Helpers::AutoCreator do
   before do
     FileUtils.rm_f(DB_FILEPATH)
@@ -30,6 +26,7 @@ RSpec.describe Kanal::Plugins::UserSystem::Helpers::AutoCreator do
     )
 
     user_system = Kanal::Plugins::UserSystem::UserSystemPlugin.new
+    user_system.auto_create.enable_telegram
     core.register_plugin user_system
 
     active_record_plugin = core.get_plugin :active_record
@@ -40,10 +37,6 @@ RSpec.describe Kanal::Plugins::UserSystem::Helpers::AutoCreator do
 
   it "tests auto creation of tg users" do
     core = initialize_core
-
-    auto_creator = TestAutoCreator.new
-
-    auto_creator.enable_telegram core
 
     core.register_input_parameter :tg_chat_id
     core.register_input_parameter :tg_username
