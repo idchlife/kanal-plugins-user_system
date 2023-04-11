@@ -42,7 +42,7 @@ module Kanal
           setup_user_storage core
           setup_user_state core
 
-          AutoCreator.new.enable_telegram(core) if @auto_create.telegram_enabled
+          AutoCreator.enable_telegram(core) if @auto_create.telegram_enabled
         end
 
         def setup_user_state(core)

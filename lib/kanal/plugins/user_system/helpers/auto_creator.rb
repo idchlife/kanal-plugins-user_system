@@ -7,13 +7,13 @@ module Kanal
         #
         # Serves as a storage of methods to enable automatic user creation used by UserSystem
         #
-        class AutoCreator
+        module AutoCreator
           #
           # Enables automatic creation of telegram user with telegram_chat_id property during consuming of input by router
           #
           # @param [Kanal::Core::Core] core <description>
           #
-          def enable_telegram(core)
+          def self.enable_telegram(core)
             core.hooks.attach :input_before_router do |input|
               tg_chat_id = input.tg_chat_id
 
