@@ -24,7 +24,10 @@ RSpec.describe Kanal::Plugins::UserSystem::UserSystemPlugin do
       adapter: "sqlite3",
       database: DB_FILEPATH
     )
-    core.register_plugin Kanal::Plugins::UserSystem::UserSystemPlugin.new
+
+    user_system = Kanal::Plugins::UserSystem::UserSystemPlugin.new
+    core.register_plugin user_system
+
     active_record_plugin = core.get_plugin :active_record
     active_record_plugin.migrate
 
@@ -84,29 +87,35 @@ RSpec.describe Kanal::Plugins::UserSystem::UserSystemPlugin do
       end
     end
 
+    output = nil
+
+    core.router.output_ready do |o|
+      output = o
+    end
+
     input = core.create_input
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to include "User exists!"
 
     input = core.create_input
     input.body = "set last_name LookAtMyHorse"
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to include "Last name changed!"
 
     input = core.create_input
     input.body = "get last_name"
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to include "LookAtMyHorse"
 
     input = core.create_input
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to include "You have it"
   end
@@ -175,9 +184,15 @@ RSpec.describe Kanal::Plugins::UserSystem::UserSystemPlugin do
       end
     end
 
+    output = nil
+
+    core.router.output_ready do |o|
+      output = o
+    end
+
     input = core.create_input
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to include "User does not exist"
 
@@ -185,14 +200,14 @@ RSpec.describe Kanal::Plugins::UserSystem::UserSystemPlugin do
     input.body = "/start"
     input.chat_id = 4444
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
     expect(output.body).to include "Welcome. Now you are required to enter your name"
 
     input = core.create_input
     input.body "Well hello there"
     input.chat_id = 4444
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to include "Please provide your name"
 
@@ -200,7 +215,7 @@ RSpec.describe Kanal::Plugins::UserSystem::UserSystemPlugin do
     input.body "John Rico"
     input.chat_id = 4444
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to eq "Nice, your name: John Rico"
 
@@ -208,13 +223,13 @@ RSpec.describe Kanal::Plugins::UserSystem::UserSystemPlugin do
     input.body "Anything"
     input.chat_id = 4444
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to eq "Main Menu"
 
     input = core.create_input
 
-    output = core.router.create_output_for_input input
+    core.router.consume_input input
 
     expect(output.body).to eq "User does not exist"
   end

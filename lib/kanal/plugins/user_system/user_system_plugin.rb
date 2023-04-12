@@ -2,6 +2,8 @@
 
 require "kanal/core/plugins/plugin"
 require_relative "./models/kanal_user"
+require_relative "helpers/auto_creator"
+require_relative "helpers/auto_create_enabler"
 
 module Kanal
   module Plugins
@@ -10,6 +12,14 @@ module Kanal
       # registration and removal system
       class UserSystemPlugin < Kanal::Core::Plugins::Plugin
         include Models
+        include Helpers
+
+        attr_reader :auto_create
+
+        def initialize
+          super
+          @auto_create = AutoCreateEnabler.new
+        end
 
         def name
           :user_system
@@ -31,6 +41,8 @@ module Kanal
 
           setup_user_storage core
           setup_user_state core
+
+          AutoCreator.enable_telegram(core) if @auto_create.telegram_enabled
         end
 
         def setup_user_state(core)
