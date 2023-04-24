@@ -9,8 +9,6 @@ gem "rake", "~> 13.0"
 
 gem "rspec", "~> 3.0"
 
-gem "kanal"
-
 group :development do
   gem "rubocop", "~> 1.21"
   gem "ruby-debug-ide"
@@ -19,6 +17,5 @@ group :development do
 end
 
 group :test do
-  gem "kanal-plugins-active_record"
   gem "simplecov", require: false
 end
