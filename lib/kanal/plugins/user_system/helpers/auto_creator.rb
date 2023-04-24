@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../models/kanal_user"
+
 module Kanal
   module Plugins
     module UserSystem
@@ -8,6 +10,7 @@ module Kanal
         # Serves as a storage of methods to enable automatic user creation used by UserSystem
         #
         module AutoCreator
+          include Kanal::Plugins::UserSystem::Models
           #
           # Enables automatic creation of telegram user with telegram_chat_id property during consuming of input by router
           #
