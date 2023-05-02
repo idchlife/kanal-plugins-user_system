@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.metadata["changelog_uri"] = "https://github.com/idchlife/kanal-plugins-user_system"
 
   spec.add_dependency "activerecord"
-  spec.add_dependency "kanal", "0.5.1"
+  spec.add_dependency "kanal", ">=0.8.0"
   spec.add_dependency "kanal-plugins-active_record", "0.2.1"
   spec.add_dependency "sqlite3"
 
